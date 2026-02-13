@@ -43,10 +43,11 @@ sudo cp target/release/struct /usr/local/bin/
 ## Quick Start
 
 ```bash
-struct 3                        # Show 3 levels deep (default)
-struct 0                        # Show everything (infinite depth)
-struct -z 2                     # Show with file sizes
-struct search "*.py"            # Find all Python files
+struct                          # Show everything (infinite depth by default)
+struct 0                        # Show current directory only (like pwd -l)
+struct 3                        # Show 3 levels deep
+struct 5 -z                     # Show 5 levels with file sizes
+struct 3 -p ~/projects          # Show ~/projects, 3 levels deep
 ```
 
 ---
@@ -58,19 +59,19 @@ struct search "*.py"            # Find all Python files
 **Show directory structure with depth limit:**
 
 ```bash
-struct [DEPTH] [PATH]
+struct [DEPTH] [OPTIONS]
 ```
 
-- `DEPTH`: How many levels to show (default: 3, use 0 for infinite)
-- `PATH`: Directory to display (default: current directory)
+- `DEPTH`: How many levels to show (default: infinite, 0 = current dir only)
+- Use `-p` or `--path` to specify a different directory
 
 **Examples:**
 ```bash
-struct                          # Current dir, 3 levels deep
-struct 5                        # Current dir, 5 levels deep
-struct 0                        # Current dir, unlimited depth
-struct 2 ~/projects             # Projects folder, 2 levels deep
-struct 0 /etc                   # All of /etc
+struct                          # Current dir, infinite depth
+struct 0                        # Current dir only (1 level)
+struct 3                        # Current dir, 3 levels deep
+struct 5 -p ~/projects          # Projects folder, 5 levels
+struct 2 --path /etc            # /etc, 2 levels
 ```
 
 ---
@@ -89,6 +90,15 @@ struct --size 2                 # Long form
 ```
 main.rs (8.5K)
 venv/ (156.3M, 2741 files ignored)
+```
+
+#### `-p, --path PATH`
+Specify directory to display (default: current directory).
+
+```bash
+struct 3 -p ~/projects          # Projects folder, 3 levels
+struct --path /etc              # /etc directory
+struct 5 -p ~/code -z           # Code folder with sizes
 ```
 
 #### `-g, --git`

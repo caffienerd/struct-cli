@@ -245,9 +245,13 @@ struct Args {
     #[command(subcommand)]
     command: Option<Commands>,
 
-    /// Maximum depth to display (like tree -L)
+    /// Maximum depth to display (0 = current dir only, default = infinite)
     #[arg(value_name = "DEPTH")]
     depth: Option<usize>,
+
+    /// Starting directory
+    #[arg(short = 'p', long = "path", default_value = ".")]
+    path: PathBuf,
 
     /// Show git-tracked files only
     #[arg(short = 'g', long = "git")]
@@ -268,10 +272,6 @@ struct Args {
     /// Disable ignores: 'all', 'defaults', 'config', or specific pattern
     #[arg(short = 'n', long = "no-ignore")]
     no_ignore: Option<String>,
-
-    /// Starting directory
-    #[arg(default_value = ".")]
-    path: PathBuf,
 }
 
 #[derive(clap::Subcommand, Debug)]
@@ -347,11 +347,11 @@ fn main() {
         }
     }
 
-    // Depth 0 means infinite, otherwise use provided depth or default to 3
+    // Depth: None = infinite, 0 = current dir only, otherwise use provided
     let depth = match args.depth {
-        Some(0) => usize::MAX,  // Infinite depth
-        Some(d) => d,
-        None => 3,              // Default depth
+        None => usize::MAX,         // No depth arg = infinite
+        Some(0) => 1,                // 0 = current dir only  
+        Some(d) => d,                // Use provided depth
     };
     
     let max_size_bytes = args.max_size_mb.map(|mb| mb * 1024 * 1024);
@@ -527,11 +527,13 @@ fn display_tree(
         // Check if we should skip this entry
         if is_dir {
             let should_skip = if config.skip_defaults {
+                // -n defaults: don't ignore any defaults
                 false
             } else if let Some(ref specific) = config.skip_specific {
-                // Only ignore if it matches the specific pattern
-                &name == specific
+                // -n PATTERN: only ignore if it DOESN'T match the specific pattern
+                &name != specific && should_ignore_dir(&name)
             } else {
+                // Normal mode: ignore defaults
                 should_ignore_dir(&name)
             };
 
