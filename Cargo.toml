@@ -1,0 +1,15 @@
+[package]
+name = "struct-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "struct"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+colored = "2.1"
+walkdir = "2.5"
+git2 = "0.19"
+regex = "1.11"
