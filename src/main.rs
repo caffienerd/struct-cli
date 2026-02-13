@@ -275,12 +275,12 @@ enum Commands {
     Clear,
     /// Search for files matching a pattern
     Search {
-        /// Maximum depth to search (0 for infinite)
-        #[arg(default_value = "0")]
-        depth: usize,
         /// Pattern to search for (e.g., "*.env", "config", "test*")
         pattern: String,
-        /// Starting directory
+        /// Maximum depth to search (0 for infinite)
+        #[arg(short = 'd', long = "depth", default_value = "0")]
+        depth: usize,
+        /// Starting directory (defaults to current directory)
         #[arg(default_value = ".")]
         path: PathBuf,
     },
