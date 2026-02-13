@@ -45,6 +45,7 @@ sudo cp target/release/struct /usr/local/bin/
 ```bash
 struct 3              # Show structure up to depth 3
 struct 0              # Show everything (infinite depth)
+struct --size 2       # Show file sizes
 struct -g 2           # Git-tracked files only
 struct -s 100 3       # Skip folders larger than 100MB
 struct -i "*.log" 2   # Add custom ignore patterns

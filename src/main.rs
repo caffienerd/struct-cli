@@ -115,6 +115,10 @@ struct Args {
     #[arg(short = 's', long = "skip-large")]
     max_size_mb: Option<u64>,
 
+    /// Show file sizes
+    #[arg(short = 'z', long = "size")]
+    show_size: bool,
+
     /// Starting directory
     #[arg(default_value = ".")]
     path: PathBuf,
@@ -143,6 +147,7 @@ struct StructConfig {
     custom_ignores: Vec<Regex>,
     max_size_bytes: Option<u64>,
     git_files: Option<HashSet<PathBuf>>,
+    show_size: bool,
 }
 
 fn main() {
@@ -215,6 +220,7 @@ fn main() {
         custom_ignores,
         max_size_bytes,
         git_files,
+        show_size: args.show_size,
     };
 
     println!("{}", args.path.display().to_string().cyan());
@@ -280,6 +286,22 @@ fn get_dir_size(path: &Path) -> u64 {
         .sum()
 }
 
+fn format_size(bytes: u64) -> String {
+    const KB: u64 = 1024;
+    const MB: u64 = KB * 1024;
+    const GB: u64 = MB * 1024;
+
+    if bytes >= GB {
+        format!("{:.1}G", bytes as f64 / GB as f64)
+    } else if bytes >= MB {
+        format!("{:.1}M", bytes as f64 / MB as f64)
+    } else if bytes >= KB {
+        format!("{:.1}K", bytes as f64 / KB as f64)
+    } else {
+        format!("{}B", bytes)
+    }
+}
+
 fn display_tree(
     path: &Path,
     config: &StructConfig,
@@ -323,8 +345,16 @@ fn display_tree(
 
             let connector = if is_last_entry { "└── " } else { "├── " };
             let dir_name = format!("{}/", name).blue().bold();
-            let count_msg = format!(" ({} files ignored)", ignored_count).bright_black();
-            println!("{}{}{}{}", prefix, connector, dir_name, count_msg);
+            
+            if config.show_size {
+                let size = get_dir_size(&path);
+                let size_str = format_size(size);
+                let count_msg = format!(" ({}, {} files ignored)", size_str, ignored_count).bright_black();
+                println!("{}{}{}{}", prefix, connector, dir_name, count_msg);
+            } else {
+                let count_msg = format!(" ({} files ignored)", ignored_count).bright_black();
+                println!("{}{}{}{}", prefix, connector, dir_name, count_msg);
+            }
             continue;
         }
 
@@ -370,7 +400,21 @@ fn display_tree(
             name.normal()
         };
 
-        println!("{}{}{}", prefix, connector, display_name);
+        // Add size if requested
+        if config.show_size {
+            if is_dir {
+                println!("{}{}{}", prefix, connector, display_name);
+            } else {
+                if let Ok(metadata) = fs::metadata(&path) {
+                    let size_str = format!(" ({})", format_size(metadata.len())).bright_black();
+                    println!("{}{}{}{}", prefix, connector, display_name, size_str);
+                } else {
+                    println!("{}{}{}", prefix, connector, display_name);
+                }
+            }
+        } else {
+            println!("{}{}{}", prefix, connector, display_name);
+        }
 
         // Recurse into directories
         if is_dir {
