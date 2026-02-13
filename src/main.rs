@@ -92,7 +92,7 @@ fn clear_config_patterns() {
     }
 }
 
-fn search_files(pattern: &str, start_path: &Path, max_depth: usize) {
+fn search_files(pattern: &str, start_path: &Path, max_depth: usize, flat: bool) {
     // Convert glob pattern to regex
     let regex_pattern = pattern.replace("*", ".*").replace("?", ".");
     let re = match Regex::new(&format!("^{}$", regex_pattern)) {
@@ -105,6 +105,7 @@ fn search_files(pattern: &str, start_path: &Path, max_depth: usize) {
 
     let mut found_count = 0;
     let mut matching_paths: HashSet<PathBuf> = HashSet::new();
+    let mut flat_results: Vec<(PathBuf, u64)> = Vec::new();
 
     // Search through all files
     for entry in WalkDir::new(start_path)
@@ -123,18 +124,25 @@ fn search_files(pattern: &str, start_path: &Path, max_depth: usize) {
         if entry.file_type().is_file() {
             if let Some(filename) = entry.file_name().to_str() {
                 if re.is_match(filename) {
-                    // Add the file path
                     let file_path = entry.path().to_path_buf();
-                    matching_paths.insert(file_path.clone());
                     
-                    // Add all parent directories
-                    let mut current = file_path.parent();
-                    while let Some(parent) = current {
-                        if parent == start_path {
-                            break;
+                    if flat {
+                        // For flat output, just store path and size
+                        let size = entry.metadata().map(|m| m.len()).unwrap_or(0);
+                        flat_results.push((file_path, size));
+                    } else {
+                        // For tree output, store path and all parent directories
+                        matching_paths.insert(file_path.clone());
+                        
+                        // Add all parent directories
+                        let mut current = file_path.parent();
+                        while let Some(parent) = current {
+                            if parent == start_path {
+                                break;
+                            }
+                            matching_paths.insert(parent.to_path_buf());
+                            current = parent.parent();
                         }
-                        matching_paths.insert(parent.to_path_buf());
-                        current = parent.parent();
                     }
                     
                     found_count += 1;
@@ -151,8 +159,17 @@ fn search_files(pattern: &str, start_path: &Path, max_depth: usize) {
     println!("{} {}", format!("found {} file(s) matching", found_count).green(), pattern.cyan());
     println!();
     
-    // Display as tree
-    display_search_tree(start_path, &matching_paths, 0, "", true);
+    if flat {
+        // Flat output: just list full paths
+        flat_results.sort_by(|a, b| a.0.cmp(&b.0));
+        for (path, size) in flat_results {
+            let size_str = format!(" ({})", format_size(size)).bright_black();
+            println!("{}{}", path.display().to_string().cyan(), size_str);
+        }
+    } else {
+        // Tree output
+        display_search_tree(start_path, &matching_paths, 0, "", true);
+    }
 }
 
 fn display_search_tree(
@@ -280,6 +297,9 @@ enum Commands {
         /// Maximum depth to search (0 for infinite)
         #[arg(short = 'd', long = "depth", default_value = "0")]
         depth: usize,
+        /// Flat output (show full paths instead of tree)
+        #[arg(short = 'f', long = "flat")]
+        flat: bool,
         /// Starting directory (defaults to current directory)
         #[arg(default_value = ".")]
         path: PathBuf,
@@ -319,9 +339,9 @@ fn main() {
                 clear_config_patterns();
                 return;
             }
-            Commands::Search { depth, pattern, path } => {
+            Commands::Search { pattern, depth, flat, path } => {
                 let max_depth = if depth == 0 { usize::MAX } else { depth };
-                search_files(&pattern, &path, max_depth);
+                search_files(&pattern, &path, max_depth, flat);
                 return;
             }
         }

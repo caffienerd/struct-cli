@@ -40,59 +40,263 @@ cargo build --release
 sudo cp target/release/struct /usr/local/bin/
 ```
 
-## Usage
+## Quick Start
 
 ```bash
-struct 3                # Show structure up to depth 3
-struct 0                # Show everything (infinite depth)
-struct -z 2             # Show file sizes
-struct -g 2             # Git-tracked files only
-struct -s 100 3         # Skip folders larger than 100MB
-struct -i "*.log" 2     # Add custom ignore patterns
-
-# No-ignore modes
-struct -n all 3         # Disable ALL ignores (show everything)
-struct -n defaults 2    # Disable default ignores only
-struct -n config 3      # Disable config file ignores only
-struct -n venv 2        # Show venv folder contents (disable specific)
+struct 3                        # Show 3 levels deep (default)
+struct 0                        # Show everything (infinite depth)
+struct -z 2                     # Show with file sizes
+struct search "*.py"            # Find all Python files
 ```
 
-### Config File
+---
 
-Save patterns permanently instead of retyping them:
+## Complete Usage Guide
+
+### Basic Tree Display
+
+**Show directory structure with depth limit:**
 
 ```bash
-struct add "chrome_profile"     # Add to permanent ignores
-struct add "*.log"              # Wildcards supported
-struct list                     # View saved patterns
+struct [DEPTH] [PATH]
+```
+
+- `DEPTH`: How many levels to show (default: 3, use 0 for infinite)
+- `PATH`: Directory to display (default: current directory)
+
+**Examples:**
+```bash
+struct                          # Current dir, 3 levels deep
+struct 5                        # Current dir, 5 levels deep
+struct 0                        # Current dir, unlimited depth
+struct 2 ~/projects             # Projects folder, 2 levels deep
+struct 0 /etc                   # All of /etc
+```
+
+---
+
+### Flags and Options
+
+#### `-z, --size`
+Show file sizes for all files and ignored directories.
+
+```bash
+struct -z 3                     # Show sizes
+struct --size 2                 # Long form
+```
+
+**Output:**
+```
+main.rs (8.5K)
+venv/ (156.3M, 2741 files ignored)
+```
+
+#### `-g, --git`
+Show only git-tracked files (ignores everything not in git).
+
+```bash
+struct -g 2                     # Git-tracked files only
+struct --git 3                  # Long form
+```
+
+**Use case:** Clean view of actual source code without build artifacts.
+
+#### `-s, --skip-large SIZE_MB`
+Skip folders larger than specified size in megabytes.
+
+```bash
+struct -s 100 3                 # Skip folders > 100MB
+struct --skip-large 500 2       # Skip folders > 500MB
+```
+
+**Output:**
+```
+node_modules/ (450MB, skipped)
+```
+
+#### `-i, --ignore PATTERNS`
+Add custom ignore patterns (comma-separated, wildcards supported).
+
+```bash
+struct -i "*.log" 3             # Ignore .log files
+struct -i "*.tmp,cache*" 2      # Multiple patterns
+struct --ignore "test*,*.bak" 3 # Long form
+```
+
+#### `-n, --no-ignore MODE`
+Disable ignores selectively. MODE can be:
+- `all` - Disable ALL ignores (show everything)
+- `defaults` - Disable built-in defaults (venv, node_modules, etc.)
+- `config` - Disable config file patterns only
+- `PATTERN` - Show specific folder (e.g., `venv`, `node_modules`)
+
+```bash
+struct -n all 2                 # Show absolutely everything
+struct -n defaults 3            # Show venv, __pycache__, etc.
+struct -n config 2              # Ignore defaults but not config
+struct -n venv 2                # Show venv contents only
+struct -n node_modules 1        # Peek inside node_modules
+struct --no-ignore all 3        # Long form
+```
+
+**Combining flags:**
+```bash
+struct -z -g 3                  # Git-tracked files with sizes
+struct -n all -z 2              # Everything with sizes
+struct -s 200 -i "*.log" 3      # Skip large + ignore logs
+```
+
+---
+
+### Config File Management
+
+Save ignore patterns permanently instead of typing `-i` every time.
+
+**Location:** `~/.config/struct/ignores.txt`
+
+#### `struct add PATTERN`
+Add a pattern to permanent ignores.
+
+```bash
+struct add "chrome_profile"     # Add folder
+struct add "*.log"              # Add file pattern
+struct add "cache"              # Add another pattern
+```
+
+#### `struct remove PATTERN`
+Remove a pattern from config.
+
+```bash
 struct remove "cache"           # Remove specific pattern
-struct clear                    # Reset config
 ```
 
-Config is stored in `~/.config/struct/ignores.txt`
+#### `struct list`
+Show all saved patterns.
+
+```bash
+struct list
+```
+
+**Output:**
+```
+custom ignore patterns:
+  chrome_profile
+  *.log
+  temp*
+
+config file: /home/user/.config/struct/ignores.txt
+```
+
+#### `struct clear`
+Delete all custom patterns.
+
+```bash
+struct clear
+```
+
+---
 
 ### Search
 
-Find files by pattern across your project:
+Find files by pattern across your project.
 
 ```bash
-struct search "*.env"           # Find all .env files
-struct search "config*"         # Find files starting with "config"
-struct search "test*.py"        # Find Python test files
-struct search "Cargo.toml" ~    # Search from home directory
+struct search PATTERN [OPTIONS] [PATH]
 ```
 
-Shows file paths with sizes, skips ignored directories for speed.
+**Basic search:**
+```bash
+struct search "*.py"                    # All Python files (current dir)
+struct search "*.env" ~/projects        # All .env files in ~/projects
+struct search "config*"                 # Files starting with "config"
+struct search "test*.rs" /code          # Rust test files in /code
+```
+
+**Search options:**
+
+#### `-d, --depth DEPTH`
+Limit search depth (default: 0 = infinite).
+
+```bash
+struct search "*.py" -d 2               # Only 2 levels deep
+struct search "*.toml" --depth 1        # Top level only
+struct search "*.js" -d 3 ~/code        # 3 levels in ~/code
+```
+
+#### `-f, --flat`
+Show flat list of full paths instead of tree.
+
+```bash
+struct search "*.env" -f                # Flat output
+struct search "*.py" --flat             # Long form
+```
+
+**Tree output (default):**
+```
+found 12 file(s) matching *.py
+
+01_python/
+├── calculator/
+│   └── KalQl8er.py (24.4K)
+├── bgm/
+│   └── BGM.py (44.5K)
+└── timebomb/
+    └── timebomb.py (5.7K)
+```
+
+**Flat output (`-f`):**
+```
+found 12 file(s) matching *.py
+
+/home/user/projects/01_python/calculator/KalQl8er.py (24.4K)
+/home/user/projects/01_python/bgm/BGM.py (44.5K)
+/home/user/projects/01_python/timebomb/timebomb.py (5.7K)
+```
+
+**Combining search options:**
+```bash
+struct search "*.rs" -d 2 -f            # Rust files, 2 levels, flat
+struct search "test*" --depth 1 --flat ~/code  # Top-level tests, flat
+```
+
+---
 
 ## Auto-Ignored Directories
 
-Common bloat folders are hidden by default:
-- Python: `venv`, `__pycache__`, `dist`, `build`, `.pytest_cache`
-- Node: `node_modules`, `.npm`, `.yarn`
-- Version Control: `.git`, `.svn`, `.hg`
-- IDEs: `.vscode`, `.idea`, `.obsidian`
-- Build artifacts: `target`, `bin`, `obj`
-- Caches: `chrome_profile`, `GPUCache`, `ShaderCache`
+These are hidden by default (folder shown with file count):
+
+**Python:**
+- `__pycache__`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`
+- `*.pyc`, `*.pyo`, `*.pyd` files
+- `*.egg-info`, `dist`, `build`, `.tox`
+- `venv`, `.venv`, `env`, `virtualenv`
+
+**JavaScript/Node:**
+- `node_modules`, `.npm`, `.yarn`
+
+**Version Control:**
+- `.git`, `.svn`, `.hg`
+
+**IDEs/Editors:**
+- `.vscode`, `.idea`, `.obsidian`
+- `*.swp`, `*.swo` files
+
+**Build Artifacts:**
+- `target` (Rust/Java)
+- `bin`, `obj` (C#)
+- `.next`, `.nuxt` (JS frameworks)
+
+**Caches:**
+- `chrome_profile`, `lofi_chrome_profile`
+- `GPUCache`, `ShaderCache`, `GrShaderCache`
+- `Cache`, `blob_storage`
+
+**Other:**
+- `.DS_Store` (macOS)
+
+Use `-n all` to show everything, or `-n PATTERN` to show specific folders.
+
+---
 
 ## Features
 
@@ -101,6 +305,48 @@ Common bloat folders are hidden by default:
 - **Git integration**: Filter to only git-tracked files
 - **Size awareness**: Skip folders over a certain size
 - **Configurable**: Save your ignore patterns permanently
+- **Fast search**: Find files with pattern matching
+- **Flexible output**: Tree or flat format
+
+---
+
+## Real-World Examples
+
+**Check project structure without clutter:**
+```bash
+cd ~/myproject
+struct 3
+```
+
+**Find all config files:**
+```bash
+struct search "*.env"
+struct search "config*" -d 2
+```
+
+**See what's actually tracked in git:**
+```bash
+struct -g 2
+```
+
+**Peek inside an ignored folder:**
+```bash
+struct -n venv 2
+struct -n node_modules 1
+```
+
+**Find large folders:**
+```bash
+struct -z 2                     # Show all sizes
+struct -s 100 3                 # Skip folders > 100MB
+```
+
+**Search with flat output for grep/scripting:**
+```bash
+struct search "*.py" -f | grep test
+```
+
+---
 
 ## Why Rust
 
