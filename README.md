@@ -45,7 +45,7 @@ sudo cp target/release/struct /usr/local/bin/
 ```bash
 struct 3              # Show structure up to depth 3
 struct 0              # Show everything (infinite depth)
-struct --size 2       # Show file sizes
+struct -z 2           # Show file sizes
 struct -g 2           # Git-tracked files only
 struct -s 100 3       # Skip folders larger than 100MB
 struct -i "*.log" 2   # Add custom ignore patterns
@@ -64,6 +64,19 @@ struct clear                    # Reset config
 ```
 
 Config is stored in `~/.config/struct/ignores.txt`
+
+### Search
+
+Find files by pattern across your project:
+
+```bash
+struct search "*.env"           # Find all .env files
+struct search "config*"         # Find files starting with "config"
+struct search "test*.py"        # Find Python test files
+struct search "Cargo.toml" ~    # Search from home directory
+```
+
+Shows file paths with sizes, skips ignored directories for speed.
 
 ## Auto-Ignored Directories
 
