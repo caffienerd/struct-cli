@@ -40,6 +40,13 @@ git clone https://github.com/caffienerd/struct-cli.git && cd struct-cli
 chmod +x install.sh && ./install.sh
 ```
 
+## Uninstallation
+
+```bash
+git clone https://github.com/caffienerd/struct-cli.git && cd struct-cli
+chmod +x uninstall.sh && ./uninstall.sh
+```
+
 ## Quick Start
 
 ```bash
