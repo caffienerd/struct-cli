@@ -44,7 +44,7 @@ sudo cp target/release/struct /usr/local/bin/
 
 ```bash
 struct                          # Show everything (infinite depth by default)
-struct 0                        # Show current directory only (like pwd -l)
+struct 0                        # Show detailed summary of current directory
 struct 3                        # Show 3 levels deep
 struct 5 -z                     # Show 5 levels with file sizes
 struct 3 -p ~/projects          # Show ~/projects, 3 levels deep
@@ -53,6 +53,58 @@ struct 3 -p ~/projects          # Show ~/projects, 3 levels deep
 ---
 
 ## Complete Usage Guide
+
+### struct 0 - Directory Summary Mode
+
+When you run `struct 0`, you get a detailed summary of the current directory with stats for each item:
+
+```bash
+struct 0
+```
+
+**Output:**
+```
+/home/user/projects/myproject (main)
+
+src/
+  /home/user/projects/myproject/src
+  total:    10 dirs · 45 files · 125.3K
+  visible:  8 dirs · 42 files · 120.1K
+  types:    rs(30) toml(5) md(3) json(2) txt(2)
+  ignored:  target(948 files)
+
+README.md
+  /home/user/projects/myproject/README.md
+  12.5K
+
+.gitignore
+  /home/user/projects/myproject/.gitignore
+  486B
+
+── ignored (top level) ──
+  .git(60 files), target(948 files) · 1008 files · 45.2M
+```
+
+**What it shows:**
+- Current directory path with git branch
+- For each directory:
+  - Full path
+  - Total stats (all files recursively)
+  - Visible stats (excluding ignored folders)
+  - File type breakdown
+  - Ignored subdirectories
+- For each file:
+  - Full path
+  - File size
+- Summary of top-level ignored items
+
+**Use cases:**
+- Quick directory analysis
+- Find what's taking up space
+- See project composition at a glance
+- Identify ignored bloat
+
+---
 
 ### Basic Tree Display
 
@@ -82,8 +134,8 @@ struct 2 --path /etc            # /etc, 2 levels
 Show file sizes for all files and ignored directories.
 
 ```bash
-struct -z 3                     # Show sizes
-struct --size 2                 # Long form
+struct 3 -z                     # Show sizes
+struct 2 --size                 # Long form
 ```
 
 **Output:**
@@ -105,8 +157,8 @@ struct 5 -p ~/code -z           # Code folder with sizes
 Show only git-tracked files (ignores everything not in git).
 
 ```bash
-struct -g 2                     # Git-tracked files only
-struct --git 3                  # Long form
+struct 2 -g                     # Git-tracked files only
+struct 3 --git                  # Long form
 ```
 
 **Use case:** Clean view of actual source code without build artifacts.
@@ -115,8 +167,8 @@ struct --git 3                  # Long form
 Skip folders larger than specified size in megabytes.
 
 ```bash
-struct -s 100 3                 # Skip folders > 100MB
-struct --skip-large 500 2       # Skip folders > 500MB
+struct 3 -s 100                 # Skip folders > 100MB
+struct 2 --skip-large 500       # Skip folders > 500MB
 ```
 
 **Output:**
@@ -128,9 +180,9 @@ node_modules/ (450MB, skipped)
 Add custom ignore patterns (comma-separated, wildcards supported).
 
 ```bash
-struct -i "*.log" 3             # Ignore .log files
-struct -i "*.tmp,cache*" 2      # Multiple patterns
-struct --ignore "test*,*.bak" 3 # Long form
+struct 3 -i "*.log"             # Ignore .log files
+struct 2 -i "*.tmp,cache*"      # Multiple patterns
+struct 3 --ignore "test*,*.bak" # Long form
 ```
 
 #### `-n, --no-ignore MODE`
@@ -141,19 +193,19 @@ Disable ignores selectively. MODE can be:
 - `PATTERN` - Show specific folder (e.g., `venv`, `node_modules`)
 
 ```bash
-struct -n all 2                 # Show absolutely everything
-struct -n defaults 3            # Show venv, __pycache__, etc.
-struct -n config 2              # Ignore defaults but not config
-struct -n venv 2                # Show venv contents only
-struct -n node_modules 1        # Peek inside node_modules
-struct --no-ignore all 3        # Long form
+struct 2 -n all                 # Show absolutely everything
+struct 3 -n defaults            # Show venv, __pycache__, etc.
+struct 2 -n config              # Ignore defaults but not config
+struct 2 -n venv                # Show venv contents only
+struct 1 -n node_modules        # Peek inside node_modules
+struct 3 --no-ignore all        # Long form
 ```
 
 **Combining flags:**
 ```bash
-struct -z -g 3                  # Git-tracked files with sizes
-struct -n all -z 2              # Everything with sizes
-struct -s 200 -i "*.log" 3      # Skip large + ignore logs
+struct 3 -z -g                  # Git-tracked files with sizes
+struct 2 -n all -z              # Everything with sizes
+struct 3 -s 200 -i "*.log"      # Skip large + ignore logs
 ```
 
 ---
@@ -336,19 +388,19 @@ struct search "config*" -d 2
 
 **See what's actually tracked in git:**
 ```bash
-struct -g 2
+struct 2 -g
 ```
 
 **Peek inside an ignored folder:**
 ```bash
-struct -n venv 2
-struct -n node_modules 1
+struct 2 -n venv
+struct 1 -n node_modules
 ```
 
 **Find large folders:**
 ```bash
-struct -z 2                     # Show all sizes
-struct -s 100 3                 # Skip folders > 100MB
+struct 2 -z                     # Show all sizes
+struct 3 -s 100                 # Skip folders > 100MB
 ```
 
 **Search with flat output for grep/scripting:**
