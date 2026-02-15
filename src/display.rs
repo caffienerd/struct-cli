@@ -61,7 +61,13 @@ pub fn display_tree(
     // Sort: directories first, then alphabetically
     entries.sort_by_key(|e| {
         let path = e.path();
-        let is_dir = path.is_dir();
+        // Check if it's a symlink pointing to a directory
+        let is_dir = if path.is_symlink() {
+            // Don't follow symlinks to avoid infinite loops
+            false
+        } else {
+            path.is_dir()
+        };
         let name = e.file_name().to_string_lossy().to_lowercase();
         (!is_dir, name)
     });
@@ -72,7 +78,14 @@ pub fn display_tree(
         let is_last_entry = idx == total - 1;
         let path = entry.path();
         let name = entry.file_name().to_string_lossy().to_string();
-        let is_dir = path.is_dir();
+        
+        // Check if it's a symlink first - NEVER recurse into symlinks
+        let is_symlink = path.is_symlink();
+        let is_dir = if is_symlink {
+            false  // Treat symlinks as files to prevent recursion
+        } else {
+            path.is_dir()
+        };
 
         // Check if we should skip this entry
         if is_dir {
@@ -90,6 +103,7 @@ pub fn display_tree(
             if should_skip {
                 // Count files in ignored directory
                 let ignored_count = WalkDir::new(&path)
+                    .follow_links(false)
                     .into_iter()
                     .filter_map(|e| e.ok())
                     .filter(|e| e.file_type().is_file())
@@ -145,7 +159,14 @@ pub fn display_tree(
 
         // Display the entry
         let connector = if is_last_entry { "└── " } else { "├── " };
-        let display_name = if is_dir {
+        let display_name = if is_symlink {
+            // Show symlink with arrow
+            if let Ok(target) = fs::read_link(&path) {
+                format!("{} -> {}", name, target.display()).cyan()
+            } else {
+                name.cyan()
+            }
+        } else if is_dir {
             format!("{}/", name).blue().bold()
         } else if is_executable(&path) {
             name.green().bold()

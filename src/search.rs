@@ -26,6 +26,7 @@ pub fn search_files(pattern: &str, start_path: &Path, max_depth: usize, flat: bo
 
     // Search through all files
     for entry in WalkDir::new(start_path)
+        .follow_links(false)
         .max_depth(max_depth)
         .into_iter()
         .filter_entry(|e| {

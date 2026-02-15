@@ -65,6 +65,7 @@ pub fn display_summary(path: &Path) {
             // Track ignored items
             if is_dir {
                 let file_count = WalkDir::new(&entry_path)
+                    .follow_links(false)
                     .into_iter()
                     .filter_map(|e| e.ok())
                     .filter(|e| e.file_type().is_file())
@@ -121,6 +122,7 @@ fn display_directory_summary(entry_path: &Path, name: &str, custom_ignores: &[Re
             if is_subdir && (should_ignore_dir(&subname) || matches_custom_pattern(&subname, custom_ignores)) {
                 // Count files in ignored subdir
                 let ignored_count = WalkDir::new(&subpath)
+                    .follow_links(false)
                     .into_iter()
                     .filter_map(|e| e.ok())
                     .filter(|e| e.file_type().is_file())
@@ -132,6 +134,7 @@ fn display_directory_summary(entry_path: &Path, name: &str, custom_ignores: &[Re
 
     // Walk recursively to count visible items (skip ignored directories)
     for sub_entry in WalkDir::new(entry_path)
+        .follow_links(false)
         .into_iter()
         .filter_entry(|e| {
             // Skip ignored directories during traversal
@@ -165,7 +168,10 @@ fn display_directory_summary(entry_path: &Path, name: &str, custom_ignores: &[Re
     }
 
     // Get ALL stats recursively (including everything)
-    for sub_entry in WalkDir::new(entry_path).into_iter().filter_map(|e| e.ok()) {
+    for sub_entry in WalkDir::new(entry_path)
+        .follow_links(false)
+        .into_iter()
+        .filter_map(|e| e.ok()) {
         if sub_entry.file_type().is_file() {
             total_file_count += 1;
             if let Ok(metadata) = sub_entry.metadata() {

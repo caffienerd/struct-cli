@@ -45,6 +45,7 @@ pub fn is_executable(path: &Path) -> bool {
 /// Get total size of a directory recursively
 pub fn get_dir_size(path: &Path) -> u64 {
     WalkDir::new(path)
+        .follow_links(false)
         .into_iter()
         .filter_map(|e| e.ok())
         .filter_map(|e| e.metadata().ok())
