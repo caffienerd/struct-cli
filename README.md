@@ -146,6 +146,104 @@ struct 2 --path /etc            # /etc, 2 levels
 
 ---
 
+### Git Integration
+
+`struct` now has comprehensive git support, allowing you to filter files by their git status.
+
+#### `-g, --git`
+Show only git-tracked files (ignores everything not in git).
+
+```bash
+struct 2 -g                     # Git-tracked files only
+struct 3 --git                  # Long form
+```
+
+**Output:**
+```
+src/
+├── main.rs (tracked)
+├── lib.rs (tracked)
+└── utils.rs (tracked)
+
+tests/
+└── integration_test.rs (tracked)
+```
+
+**Use case:** Clean view of actual source code without build artifacts.
+
+#### `--gu`
+Show only untracked files (not yet added to git).
+
+```bash
+struct 2 --gu                   # Untracked files only
+```
+
+**Output (color-coded red for visibility):**
+```
+.env (untracked)
+debug.log (untracked)
+tmp/
+└── cache.tmp (untracked)
+```
+
+#### `--gs`
+Show only staged files (ready to commit).
+
+```bash
+struct 2 --gs                   # Staged files only
+```
+
+**Output (color-coded green for visibility):**
+```
+src/
+├── main.rs (staged)
+└── lib.rs (staged)
+
+README.md (staged)
+```
+
+#### `--gc`
+Show only modified/changed files (unstaged changes).
+
+```bash
+struct 2 --gc                   # Modified files only
+```
+
+**Output (color-coded yellow for visibility):**
+```
+src/
+├── main.rs (modified)
+└── config.rs (modified)
+
+tests/unit_test.rs (modified)
+```
+
+#### `--gr`
+Start from git root (repository root) with any git mode. Useful when inside a subdirectory of a git repo.
+
+```bash
+struct 2 -g --gr                # Git-tracked files from repo root
+struct 3 --gc --gr              # Modified files from repo root
+struct 1 --gs --gr              # Staged files from repo root
+```
+
+**Use case:** Get consistent output regardless of your current working directory within the repository.
+
+**Git Mode Features:**
+- **Color-coded output**: Green (staged), Yellow (modified), Red (untracked)
+- **Git branch display**: Shows current branch in output
+- **Clean filtering**: Automatically respects `.gitignore`
+- **Combinable**: Can combine git modes with other flags like `-z` for sizes
+
+**Examples:**
+```bash
+struct 3 -g -z                  # Tracked files with sizes
+struct 2 --gu --gr              # Untracked files from repo root
+struct 3 --gs -z --gr           # Staged files with sizes from repo root
+```
+
+---
+
 ### Flags and Options
 
 #### `-z, --size`
@@ -172,14 +270,7 @@ struct 5 -p ~/code -z           # Code folder with sizes
 ```
 
 #### `-g, --git`
-Show only git-tracked files (ignores everything not in git).
-
-```bash
-struct 2 -g                     # Git-tracked files only
-struct 3 --git                  # Long form
-```
-
-**Use case:** Clean view of actual source code without build artifacts.
+**Deprecated:** Use Git Integration section above instead. This flag shows git-tracked files.
 
 #### `-s, --skip-large SIZE_MB`
 Skip folders larger than specified size in megabytes.
@@ -217,6 +308,18 @@ struct 2 -n config              # Ignore defaults but not config
 struct 2 -n venv                # Show venv contents only
 struct 1 -n node_modules        # Peek inside node_modules
 struct 3 --no-ignore all        # Long form
+```
+
+#### `--version`
+Display the version of struct-cli.
+
+```bash
+struct --version
+```
+
+**Output:**
+```
+struct-cli 0.4.2
 ```
 
 **Combining flags:**
@@ -278,7 +381,7 @@ struct clear
 
 ### Search
 
-Find files by pattern across your project.
+Find files AND directories by pattern across your project.
 
 ```bash
 struct search PATTERN [OPTIONS] [PATH]
@@ -332,6 +435,8 @@ found 12 file(s) matching *.py
 /home/user/projects/01_python/bgm/BGM.py (44.5K)
 /home/user/projects/01_python/timebomb/timebomb.py (5.7K)
 ```
+
+**Note:** Search results include both files and directories matching your pattern.
 
 **Combining search options:**
 ```bash

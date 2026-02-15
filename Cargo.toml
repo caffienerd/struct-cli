@@ -1,6 +1,6 @@
 [package]
 name = "struct-cli"
-version = "0.3.3"
+version = "0.4.2"
 edition = "2021"
 authors = ["Coffee Nerd nerdcoffeemail@gmail.com"]
 description = "A smarter tree command with intelligent defaults. Filters out common clutter like node_modules and venv, supports custom ignore patterns, and includes advanced features such as file search, directory summaries, size-aware filtering, and git integration."

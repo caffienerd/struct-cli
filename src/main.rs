@@ -1,5 +1,6 @@
 use clap::Parser;
 use colored::*;
+use git2::Repository;
 use regex::Regex;
 use std::path::PathBuf;
 
@@ -10,13 +11,14 @@ mod search;
 mod summary;
 mod utils;
 
-use config::{add_config_pattern, clear_config_patterns, list_config_patterns, load_config_patterns, remove_config_pattern};
-use display::{display_tree, get_git_tracked_files, StructConfig};
+use crate::config::{add_config_pattern, clear_config_patterns, list_config_patterns, load_config_patterns, remove_config_pattern};
+use display::{display_tree, get_git_tracked_files, get_git_untracked_files, get_git_staged_files, get_git_changed_files, GitMode, StructConfig};
 use search::search_files;
 use summary::display_summary;
 
 #[derive(Parser, Debug)]
 #[command(name = "struct")]
+#[command(version)]
 #[command(about = "A smarter tree command with intelligent defaults", long_about = None)]
 struct Args {
     #[command(subcommand)]
@@ -30,9 +32,41 @@ struct Args {
     #[arg(short = 'p', long = "path", default_value = ".")]
     path: PathBuf,
 
-    /// Show git-tracked files only
+    /// Git mode: show only tracked files
     #[arg(short = 'g', long = "git")]
-    git_mode: bool,
+    git_tracked: bool,
+
+    /// Git untracked: show only untracked files
+    #[arg(long = "gu")]
+    git_untracked: bool,
+
+    /// Git staged: show only staged files
+    #[arg(long = "gs")]
+    git_staged: bool,
+
+    /// Git changed: show modified files (not staged)
+    #[arg(long = "gc")]
+    git_changed: bool,
+
+    /// Git history: show last commit per directory
+    #[arg(long = "gh")]
+    git_history: bool,
+
+    /// Start from git root (use with -g, --gu, --gs, --gc, --gh)
+    #[arg(long = "gr")]
+    git_root: bool,
+
+    #[arg(long = "gur")]
+    git_untracked_root: bool,
+
+    #[arg(long = "gsr")]
+    git_staged_root: bool,
+
+    #[arg(long = "gcr")]
+    git_changed_root: bool,
+
+    #[arg(long = "ghr")]
+    git_history_root: bool,
 
     /// Custom ignore patterns (comma-separated, e.g., "*.log,temp*")
     #[arg(short = 'i', long = "ignore")]
@@ -133,6 +167,50 @@ fn main() {
     
     let max_size_bytes = args.max_size_mb.map(|mb| mb * 1024 * 1024);
 
+    // Determine git mode
+    let git_mode = if args.git_changed || args.git_changed_root {
+        Some(GitMode::Changed)
+    } else if args.git_staged || args.git_staged_root {
+        Some(GitMode::Staged)
+    } else if args.git_untracked || args.git_untracked_root {
+        Some(GitMode::Untracked)
+    } else if args.git_tracked || args.git_root {
+        Some(GitMode::Tracked)
+    } else if args.git_history || args.git_history_root {
+        Some(GitMode::History)
+    } else {
+        None
+    };
+
+    // Determine if we should start from git root
+    let use_git_root = args.git_root || args.git_untracked_root 
+        || args.git_staged_root || args.git_changed_root || args.git_history_root;
+
+    // Check if in git repo when git mode is used
+    if git_mode.is_some() {
+        if Repository::discover(&args.path).is_err() {
+            eprintln!("Not in a git repository");
+            return;
+        }
+    }
+
+    // Get the actual starting path
+    let start_path = if use_git_root {
+        // Find git root
+        if let Ok(repo) = Repository::discover(&args.path) {
+            if let Some(workdir) = repo.workdir() {
+                workdir.to_path_buf()
+            } else {
+                args.path.clone()
+            }
+        } else {
+            eprintln!("Not in a git repository");
+            return;
+        }
+    } else {
+        args.path.clone()
+    };
+
     // Parse no-ignore option
     let (skip_defaults, skip_config, skip_specific) = match args.no_ignore {
         Some(ref mode) => match mode.as_str() {
@@ -172,9 +250,15 @@ fn main() {
         }
     }
 
-    // Get git-tracked files if in git mode
-    let git_files = if args.git_mode {
-        get_git_tracked_files(&args.path)
+    // Get git files if in git mode
+    let git_files = if let Some(ref mode) = git_mode {
+        match mode {
+            GitMode::Tracked => get_git_tracked_files(&start_path),
+            GitMode::Untracked => get_git_untracked_files(&start_path),
+            GitMode::Staged => get_git_staged_files(&start_path),
+            GitMode::Changed => get_git_changed_files(&start_path),
+            GitMode::History => None, // History is handled differently
+        }
     } else {
         None
     };
@@ -184,17 +268,18 @@ fn main() {
         custom_ignores,
         max_size_bytes,
         git_files,
+        git_mode,
         show_size: args.show_size,
         skip_defaults,
         skip_specific,
     };
 
     // Special mode: depth 1 (struct 0) shows detailed summary
-    if depth == 1 {
-        display_summary(&args.path);
+    if args.depth == Some(0) {
+        display_summary(&start_path);
         return;
     }
 
-    println!("{}", args.path.display().to_string().cyan());
-    display_tree(&args.path, &config, 0, "", true);
+    println!("{}", start_path.display().to_string().cyan());
+    display_tree(&start_path, &config, 0, "", true);
 }

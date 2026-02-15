@@ -24,7 +24,7 @@ pub fn search_files(pattern: &str, start_path: &Path, max_depth: usize, flat: bo
     let mut matching_paths: HashSet<PathBuf> = HashSet::new();
     let mut flat_results: Vec<(PathBuf, u64)> = Vec::new();
 
-    // Search through all files
+    // Search through all files and directories
     for entry in WalkDir::new(start_path)
         .follow_links(false)
         .max_depth(max_depth)
@@ -39,42 +39,44 @@ pub fn search_files(pattern: &str, start_path: &Path, max_depth: usize, flat: bo
         })
         .filter_map(|e| e.ok())
     {
-        if entry.file_type().is_file() {
-            if let Some(filename) = entry.file_name().to_str() {
-                if re.is_match(filename) {
-                    let file_path = entry.path().to_path_buf();
-                    
-                    if flat {
-                        // For flat output, just store path and size
-                        let size = entry.metadata().map(|m| m.len()).unwrap_or(0);
-                        flat_results.push((file_path, size));
+        if let Some(filename) = entry.file_name().to_str() {
+            if re.is_match(filename) {
+                let file_path = entry.path().to_path_buf();
+                
+                if flat {
+                    // For flat output, just store path and size
+                    let size = if entry.file_type().is_dir() {
+                        0
                     } else {
-                        // For tree output, store path and all parent directories
-                        matching_paths.insert(file_path.clone());
-                        
-                        // Add all parent directories
-                        let mut current = file_path.parent();
-                        while let Some(parent) = current {
-                            if parent == start_path {
-                                break;
-                            }
-                            matching_paths.insert(parent.to_path_buf());
-                            current = parent.parent();
-                        }
-                    }
+                        entry.metadata().map(|m| m.len()).unwrap_or(0)
+                    };
+                    flat_results.push((file_path, size));
+                } else {
+                    // For tree output, store path and all parent directories
+                    matching_paths.insert(file_path.clone());
                     
-                    found_count += 1;
+                    // Add all parent directories
+                    let mut current = file_path.parent();
+                    while let Some(parent) = current {
+                        if parent == start_path {
+                            break;
+                        }
+                        matching_paths.insert(parent.to_path_buf());
+                        current = parent.parent();
+                    }
                 }
+                
+                found_count += 1;
             }
         }
     }
 
     if found_count == 0 {
-        println!("{}", format!("no files matching '{}' found", pattern).yellow());
+        println!("{}", format!("no files or directories matching '{}' found", pattern).yellow());
         return;
     }
 
-    println!("{} {}", format!("found {} file(s) matching", found_count).green(), pattern.cyan());
+    println!("{} {}", format!("found {} item(s) matching", found_count).green(), pattern.cyan());
     println!();
     
     if flat {

@@ -96,7 +96,7 @@
         <div class="text-center space-y-8 animate-fade-in">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-github-border/30 border border-github-border text-xs font-medium text-github-accent mb-4">
                 <span class="flex w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-                Built with Rust
+                v0.4.2 • Rust • Built with 🦀
             </div>
             
             <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white">
@@ -228,8 +228,8 @@
                 <div class="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <i data-lucide="git-branch" class="w-6 h-6 text-orange-500"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-white mb-2">Git-aware</h3>
-                <p class="text-github-muted text-sm leading-relaxed">Use <code class="text-github-accent bg-github-border/30 px-1 rounded">-g</code> flag to show only git-tracked files. Perfect for seeing what's actually in your repo.</p>
+                <h3 class="text-lg font-semibold text-white mb-2">Comprehensive Git Integration</h3>
+                <p class="text-github-muted text-sm leading-relaxed">Multiple git modes: tracked (<code class="text-github-accent bg-github-border/30 px-1 rounded">-g</code>), untracked (<code class="text-github-accent bg-github-border/30 px-1 rounded">--gu</code>), staged (<code class="text-github-accent bg-github-border/30 px-1 rounded">--gs</code>), modified (<code class="text-github-accent bg-github-border/30 px-1 rounded">--gc</code>). Color-coded output with branch display.</p>
             </div>
 
             <!-- Blazing fast -->
@@ -258,6 +258,16 @@
                         <div>
                             <h4 class="text-white font-medium">Depth Control</h4>
                             <p class="text-github-muted text-sm">Infinite depth by default, or limit with <code class="text-github-accent">struct 3</code></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="w-6 h-6 rounded bg-github-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 text-github-accent"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-medium">Git Integration</h4>
+                            <p class="text-github-muted text-sm">Track (<code class="text-github-accent">-g</code>), staged (<code class="text-github-accent">--gs</code>), modified (<code class="text-github-accent">--gc</code>), untracked (<code class="text-github-accent">--gu</code>) with color-coding</p>
                         </div>
                     </div>
                     
@@ -319,13 +329,19 @@
                             <span class="text-github-green">$</span> <span class="text-github-text">struct 2 -g</span>
                         </div>
                         <div class="code-line">
-                            <span class="syntax-comment"># Search for Python files</span>
+                            <span class="syntax-comment"># Show staged files with green color</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="text-github-green">$</span> <span class="text-github-text">struct 3 --gs --gr</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="syntax-comment"># Search for Python files & folders</span>
                         </div>
                         <div class="code-line">
                             <span class="text-github-green">$</span> <span class="text-github-text">struct search "*.py" -f</span>
                         </div>
                         <div class="code-line">
-                            <span class="syntax-comment"># Summary mode</span>
+                            <span class="syntax-comment"># Summary mode with stats</span>
                         </div>
                         <div class="code-line">
                             <span class="text-github-green">$</span> <span class="text-github-text">struct 0</span>
