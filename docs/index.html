@@ -364,10 +364,26 @@
         </div>
 
         <div class="space-y-6">
-            <!-- Manual Install -->
+            <!-- Option 1: Install from crates.io -->
             <div class="rounded-xl overflow-hidden bg-[#161b22] border border-github-border terminal-shadow">
                 <div class="flex items-center justify-between px-4 py-3 bg-[#0d1117] border-b border-github-border">
-                    <span class="text-sm text-github-muted font-mono">Manual Install</span>
+                    <span class="text-sm text-github-muted font-mono">Option 1: Install from crates.io</span>
+                    <button onclick="copyCode('cargo install struct-cli')" class="text-xs flex items-center gap-1 text-github-muted hover:text-github-accent transition-colors copy-btn">
+                        <i data-lucide="copy" class="w-3 h-3"></i>
+                        <span>Copy</span>
+                    </button>
+                </div>
+                <div class="p-4 font-mono text-sm space-y-1">
+                    <div class="text-github-muted mb-2">The easiest way is to install directly via Cargo (make sure you have Rust installed):</div>
+                    <div class="text-github-green">$ cargo install struct-cli</div>
+                    <div class="text-github-muted mt-3 text-xs">View on <a href="https://crates.io/crates/struct-cli" target="_blank" rel="noopener" class="text-github-accent hover:underline">crates.io</a></div>
+                </div>
+            </div>
+
+            <!-- Option 2: Install from source -->
+            <div class="rounded-xl overflow-hidden bg-[#161b22] border border-github-border terminal-shadow">
+                <div class="flex items-center justify-between px-4 py-3 bg-[#0d1117] border-b border-github-border">
+                    <span class="text-sm text-github-muted font-mono">Option 2: Install from source</span>
                     <button onclick="copyCode('git clone https://github.com/caffienerd/struct-cli.git && cd struct-cli && chmod +x install.sh && ./install.sh')" class="text-xs flex items-center gap-1 text-github-muted hover:text-github-accent transition-colors copy-btn">
                         <i data-lucide="copy" class="w-3 h-3"></i>
                         <span>Copy</span>

@@ -35,8 +35,19 @@ The folder still appears, but you get a clean file count instead of thousands of
 
 ## Installation
 
+### Option 1: Install from crates.io
+The easiest way is to install directly via Cargo (make sure you have Rust installed):
+
 ```bash
-git clone https://github.com/caffienerd/struct-cli.git && cd struct-cli
+cargo install struct-cli
+```
+
+View on [crates.io](https://crates.io/crates/struct-cli)
+
+### Option 2: Install from source
+```
+git clone https://github.com/caffienerd/struct-cli.git
+cd struct-cli
 chmod +x install.sh && ./install.sh
 ```
 
@@ -427,4 +438,4 @@ Found a bug? Want a feature? Open an issue. PRs welcome.
 
 ## License
 
-MIT
+MIT - feel free to do whatever you want with it!
