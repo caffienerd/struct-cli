@@ -79,9 +79,13 @@
                     </div>
                     <span class="font-bold text-xl tracking-tight text-white">struct</span>
                 </div>
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-4">
                     <a href="#features" class="text-sm text-github-muted hover:text-github-text transition-colors hidden sm:block">Features</a>
                     <a href="#install" class="text-sm text-github-muted hover:text-github-text transition-colors hidden sm:block">Install</a>
+                    <button id="theme-toggle" class="theme-toggle" title="Toggle theme">
+                        <i data-lucide="sun" class="w-5 h-5" id="theme-sun"></i>
+                        <i data-lucide="moon" class="w-5 h-5 hidden" id="theme-moon"></i>
+                    </button>
                     <a href="https://github.com/caffienerd/struct-cli" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-github-border hover:border-github-accent hover:text-github-accent transition-all text-sm font-medium group">
                         <i data-lucide="github" class="w-4 h-4"></i>
                         <span>Star on GitHub</span>
@@ -121,9 +125,9 @@
 
         <!-- Terminal Demo -->
         <div class="mt-16 relative max-w-3xl mx-auto animate-slide-up" style="animation-delay: 0.2s">
-            <div class="rounded-xl overflow-hidden bg-[#161b22] border border-github-border terminal-shadow">
+            <div class="rounded-xl overflow-hidden border border-github-border terminal-shadow" style="background-color: var(--bg-secondary);">
                 <!-- Terminal Header -->
-                <div class="flex items-center gap-2 px-4 py-3 bg-[#0d1117] border-b border-github-border">
+                <div class="flex items-center gap-2 px-4 py-3 border-b border-github-border" style="background-color: var(--bg-primary);">
                     <div class="flex gap-2">
                         <div class="w-3 h-3 rounded-full bg-red-500"></div>
                         <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -181,7 +185,7 @@
 
     <!-- Support Section -->
     <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-github-accent/10 via-github-purple/10 to-github-accent/10 border border-github-accent/20 p-8 sm:p-12">
+        <div class="relative overflow-hidden rounded-2xl border border-github-accent/20 p-8 sm:p-12" style="background: linear-gradient(to right, rgba(9, 105, 218, 0.1), rgba(111, 66, 193, 0.1), rgba(9, 105, 218, 0.1));">
             <!-- Accent line top -->
             <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-github-accent/50 to-transparent"></div>
             
@@ -214,7 +218,7 @@
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Signal over noise -->
-            <div class="feature-card group p-6 rounded-xl border border-github-border bg-[#161b22]/50 hover:border-github-accent/50 transition-all hover-lift">
+            <div class="feature-card group p-6 rounded-xl border border-github-border hover:border-github-accent/50 transition-all hover-lift" style="background-color: rgba(22, 27, 34, 0.5);">
                 <div class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <i data-lucide="eye-off" class="w-6 h-6 text-github-accent"></i>
                 </div>
@@ -223,7 +227,7 @@
             </div>
 
             <!-- Intelligent defaults -->
-            <div class="feature-card group p-6 rounded-xl border border-github-border bg-[#161b22]/50 hover:border-github-accent/50 transition-all hover-lift">
+            <div class="feature-card group p-6 rounded-xl border border-github-border hover:border-github-accent/50 transition-all hover-lift" style="background-color: rgba(22, 27, 34, 0.5);">
                 <div class="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <i data-lucide="brain" class="w-6 h-6 text-github-green"></i>
                 </div>
@@ -232,7 +236,7 @@
             </div>
 
             <!-- Directory summaries -->
-            <div class="feature-card group p-6 rounded-xl border border-github-border bg-[#161b22]/50 hover:border-github-accent/50 transition-all hover-lift">
+            <div class="feature-card group p-6 rounded-xl border border-github-border hover:border-github-accent/50 transition-all hover-lift" style="background-color: rgba(22, 27, 34, 0.5);">
                 <div class="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <i data-lucide="bar-chart-3" class="w-6 h-6 text-github-purple"></i>
                 </div>
@@ -241,7 +245,7 @@
             </div>
 
             <!-- Built-in search -->
-            <div class="feature-card group p-6 rounded-xl border border-github-border bg-[#161b22]/50 hover:border-github-accent/50 transition-all hover-lift">
+            <div class="feature-card group p-6 rounded-xl border border-github-border hover:border-github-accent/50 transition-all hover-lift" style="background-color: rgba(22, 27, 34, 0.5);">
                 <div class="w-12 h-12 rounded-lg bg-yellow-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <i data-lucide="search" class="w-6 h-6 text-yellow-500"></i>
                 </div>
@@ -250,7 +254,7 @@
             </div>
 
             <!-- Git-aware -->
-            <div class="feature-card group p-6 rounded-xl border border-github-border bg-[#161b22]/50 hover:border-github-accent/50 transition-all hover-lift">
+            <div class="feature-card group p-6 rounded-xl border border-github-border hover:border-github-accent/50 transition-all hover-lift" style="background-color: rgba(22, 27, 34, 0.5);">
                 <div class="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <i data-lucide="git-branch" class="w-6 h-6 text-orange-500"></i>
                 </div>
@@ -259,7 +263,7 @@
             </div>
 
             <!-- Blazing fast -->
-            <div class="feature-card group p-6 rounded-xl border border-github-border bg-[#161b22]/50 hover:border-github-accent/50 transition-all hover-lift">
+            <div class="feature-card group p-6 rounded-xl border border-github-border hover:border-github-accent/50 transition-all hover-lift" style="background-color: rgba(22, 27, 34, 0.5);">
                 <div class="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <i data-lucide="zap" class="w-6 h-6 text-red-400"></i>
                 </div>
@@ -331,8 +335,8 @@
 
             <!-- Code Examples -->
             <div class="space-y-4">
-                <div class="rounded-lg overflow-hidden bg-[#161b22] border border-github-border">
-                    <div class="flex items-center gap-2 px-4 py-2 bg-[#0d1117] border-b border-github-border">
+                <div class="rounded-lg overflow-hidden border border-github-border" style="background-color: var(--bg-secondary);">
+                    <div class="flex items-center gap-2 px-4 py-2 border-b border-github-border" style="background-color: var(--bg-primary);">
                         <span class="text-xs text-github-muted font-mono">Usage Examples</span>
                     </div>
                     <div class="p-4 font-mono text-sm space-y-3 overflow-x-auto">
@@ -376,8 +380,8 @@
                 </div>
                 
                 <!-- Ignore list preview -->
-                <div class="rounded-lg overflow-hidden bg-[#161b22] border border-github-border">
-                    <div class="flex items-center justify-between px-4 py-2 bg-[#0d1117] border-b border-github-border">
+                <div class="rounded-lg overflow-hidden border border-github-border" style="background-color: var(--bg-secondary);">
+                    <div class="flex items-center justify-between px-4 py-2 border-b border-github-border" style="background-color: var(--bg-primary);">
                         <span class="text-xs text-github-muted font-mono">Auto-ignored Directories</span>
                         <span class="text-xs text-github-accent">20+ patterns</span>
                     </div>
@@ -407,8 +411,8 @@
 
         <div class="space-y-6">
             <!-- Option 1: Install from crates.io -->
-            <div class="rounded-xl overflow-hidden bg-[#161b22] border border-github-border terminal-shadow">
-                <div class="flex items-center justify-between px-4 py-3 bg-[#0d1117] border-b border-github-border">
+            <div class="rounded-xl overflow-hidden border border-github-border terminal-shadow" style="background-color: var(--bg-secondary);">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-github-border" style="background-color: var(--bg-primary);">
                     <span class="text-sm text-github-muted font-mono">Option 1: Install from crates.io</span>
                     <button onclick="copyCode('cargo install struct-cli')" class="text-xs flex items-center gap-1 text-github-muted hover:text-github-accent transition-colors copy-btn">
                         <i data-lucide="copy" class="w-3 h-3"></i>
@@ -423,8 +427,8 @@
             </div>
 
             <!-- Option 2: Install from source -->
-            <div class="rounded-xl overflow-hidden bg-[#161b22] border border-github-border terminal-shadow">
-                <div class="flex items-center justify-between px-4 py-3 bg-[#0d1117] border-b border-github-border">
+            <div class="rounded-xl overflow-hidden border border-github-border terminal-shadow" style="background-color: var(--bg-secondary);">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-github-border" style="background-color: var(--bg-primary);">
                     <span class="text-sm text-github-muted font-mono">Option 2: Install from source</span>
                     <button onclick="copyCode('git clone https://github.com/caffienerd/struct-cli.git && cd struct-cli && chmod +x install.sh && ./install.sh')" class="text-xs flex items-center gap-1 text-github-muted hover:text-github-accent transition-colors copy-btn">
                         <i data-lucide="copy" class="w-3 h-3"></i>
@@ -439,13 +443,13 @@
             </div>
 
             <!-- Compatibility Note -->
-            <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#161b22]/50 border border-github-border/50">
+            <div class="flex items-center gap-3 px-4 py-3 rounded-lg border border-github-border/50" style="background-color: rgba(22, 27, 34, 0.3);">
                 <i data-lucide="linux" class="w-5 h-5 text-github-muted"></i>
                 <span class="text-sm text-github-muted">Works on RHEL, Arch, Ubuntu, Debian, Fedora, and other Linux distributions</span>
             </div>
 
             <!-- Quick Start -->
-            <div class="mt-8 p-6 rounded-xl bg-gradient-to-r from-github-accent/10 to-purple-500/10 border border-github-accent/20">
+            <div class="mt-8 p-6 rounded-xl border border-github-accent/20" style="background: linear-gradient(to right, rgba(9, 105, 218, 0.1), rgba(111, 66, 193, 0.1));">
                 <h3 class="text-white font-semibold mb-2 flex items-center gap-2">
                     <i data-lucide="rocket" class="w-5 h-5 text-github-accent"></i>
                     Quick Start
@@ -475,7 +479,7 @@
                 Struct is MIT licensed and open source. Found a bug? Want a feature? Contributions are welcome.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                <a href="https://github.com/caffienerd/struct-cli" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-github-darker font-semibold hover:bg-gray-100 transition-all hover-lift">
+                <a href="https://github.com/caffienerd/struct-cli" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg border border-github-border hover:bg-github-border/30 text-github-text font-medium transition-all">
                     <i data-lucide="star" class="w-5 h-5"></i>
                     Star on GitHub
                 </a>

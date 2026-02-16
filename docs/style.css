@@ -1,7 +1,39 @@
+/* CSS Variables for theming */
+:root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --border: #30363d;
+    --text-primary: #c9d1d9;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --purple: #a371f7;
+    --star-opacity: 0.03;
+    --scrollbar-track: #0d1117;
+    --scrollbar-thumb: #30363d;
+    --scrollbar-thumb-hover: #484f58;
+}
+
+html.light-mode {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f6f8fa;
+    --border: #d0d7de;
+    --text-primary: #24292f;
+    --text-muted: #57606a;
+    --accent: #0969da;
+    --green: #1a7f0e;
+    --purple: #6f42c1;
+    --star-opacity: 0.08;
+    --scrollbar-track: #f6f8fa;
+    --scrollbar-thumb: #d0d7de;
+    --scrollbar-thumb-hover: #b1bac4;
+}
+
 /* Base styles */
 body {
-    background-color: #0d1117;
-    color: #c9d1d9;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Terminal shadow effect */
@@ -9,9 +41,13 @@ body {
     box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.8);
 }
 
+html.light-mode .terminal-shadow {
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.1);
+}
+
 /* Gradient text for headings */
 .gradient-text {
-    background: linear-gradient(135deg, #58a6ff 0%, #a371f7 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -24,7 +60,11 @@ body {
 
 .hover-lift:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px -10px rgba(88, 166, 255, 0.2);
+    box-shadow: 0 10px 30px -10px var(--accent-alpha);
+}
+
+html.light-mode .hover-lift:hover {
+    box-shadow: 0 10px 30px -10px rgba(9, 105, 218, 0.2);
 }
 
 /* Code line counter */
@@ -37,38 +77,38 @@ body {
     display: inline-block;
     width: 2rem;
     margin-right: 1rem;
-    color: #6e7681;
+    color: var(--text-muted);
     text-align: right;
     font-size: 0.875rem;
 }
 
 /* Syntax highlighting colors */
 .syntax-dir {
-    color: #58a6ff;
+    color: var(--accent);
 }
 
 .syntax-file {
-    color: #c9d1d9;
+    color: var(--text-primary);
 }
 
 .syntax-ignored {
-    color: #8b949e;
+    color: var(--text-muted);
     font-style: italic;
 }
 
 .syntax-size {
-    color: #3fb950;
+    color: var(--green);
 }
 
 .syntax-comment {
-    color: #8b949e;
+    color: var(--text-muted);
 }
 
 /* Cursor blink animation */
 .cursor-blink::after {
     content: '▋';
     animation: cursor 1s infinite;
-    color: #58a6ff;
+    color: var(--accent);
 }
 
 @keyframes cursor {
@@ -90,7 +130,16 @@ body {
         radial-gradient(2px 2px at 160px 120px, #ddd, rgba(0,0,0,0));
     background-repeat: repeat;
     background-size: 200px 200px;
-    opacity: 0.03;
+    opacity: var(--star-opacity);
+}
+
+html.light-mode .star-bg {
+    background-image: 
+        radial-gradient(1px 1px at 20px 30px, #333, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #444, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 50px 160px, #222, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, #333, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #222, rgba(0,0,0,0));
 }
 
 /* Feature cards animation initial state */
@@ -113,7 +162,12 @@ html {
 /* Selection styling */
 ::selection {
     background-color: rgba(88, 166, 255, 0.3);
-    color: #c9d1d9;
+    color: var(--text-primary);
+}
+
+html.light-mode ::selection {
+    background-color: rgba(9, 105, 218, 0.2);
+    color: var(--text-primary);
 }
 
 /* Custom scrollbar for terminal */
@@ -123,22 +177,22 @@ html {
 }
 
 .terminal-shadow ::-webkit-scrollbar-track {
-    background: #0d1117;
+    background: var(--scrollbar-track);
 }
 
 .terminal-shadow ::-webkit-scrollbar-thumb {
-    background: #30363d;
+    background: var(--scrollbar-thumb);
     border-radius: 4px;
 }
 
 .terminal-shadow ::-webkit-scrollbar-thumb:hover {
-    background: #484f58;
+    background: var(--scrollbar-thumb-hover);
 }
 
 /* Focus visible for accessibility */
 a:focus-visible,
 button:focus-visible {
-    outline: 2px solid #58a6ff;
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
 
@@ -156,4 +210,272 @@ button:focus-visible {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    padding: 0.5rem;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.theme-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.theme-toggle svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    stroke-width: 2;
+}
+
+/* Terminal/Code block styling */
+.terminal-code {
+    background-color: var(--bg-secondary);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+.terminal-header {
+    background-color: var(--bg-primary);
+    border-color: var(--border);
+}
+
+.terminal-command {
+    color: var(--text-primary);
+}
+
+.terminal-prompt {
+    color: var(--green);
+}
+
+html.light-mode .terminal-prompt {
+    color: #1a7f0e;
+    font-weight: 600;
+}
+
+/* Light mode overrides for Tailwind colors */
+html.light-mode {
+    --tw-bg-github-dark: var(--bg-primary);
+    --tw-bg-github-darker: var(--bg-secondary);
+    --tw-border-github-border: var(--border);
+    --tw-text-github-text: var(--text-primary);
+    --tw-text-github-muted: var(--text-muted);
+    --tw-text-github-accent: var(--accent);
+    --tw-text-github-green: var(--green);
+    --tw-text-github-blue: var(--accent);
+    --tw-text-github-purple: var(--purple);
+}
+
+html.light-mode .bg-github-dark,
+html.light-mode .bg-github-darker {
+    background-color: var(--bg-primary);
+}
+
+html.light-mode .border-github-border {
+    border-color: var(--border);
+}
+
+html.light-mode .text-github-text {
+    color: var(--text-primary);
+}
+
+html.light-mode .text-github-muted {
+    color: var(--text-muted);
+}
+
+html.light-mode .text-github-accent,
+html.light-mode .hover\\:text-github-accent:hover {
+    color: var(--accent);
+}
+
+html.light-mode .text-github-green {
+    color: var(--green);
+}
+
+html.light-mode .text-white {
+    color: var(--text-primary);
+}
+
+html.light-mode .hover\\:border-github-accent:hover {
+    border-color: var(--accent);
+}
+
+html.light-mode .text-orange-500 {
+    color: #fb923c;
+}
+
+html.light-mode .shadow-github-accent\\/20 {
+    box-shadow: 0 0 0 0 rgba(9, 105, 218, 0.2);
+}
+
+/* Terminal/code blocks with hardcoded colors */
+html.light-mode .bg-\\[\\#161b22\\],
+html.light-mode .bg-\\[\\#0d1117\\] {
+    background-color: var(--bg-secondary) !important;
+}
+
+html.light-mode .bg-\\[\\#161b22\\]\\/50 {
+    background-color: rgba(246, 248, 250, 0.5) !important;
+}
+
+/* Feature cards */
+html.light-mode [class*="bg-\\[\\#161b22\\]\\/50"] {
+    background-color: rgba(246, 248, 250, 0.5) !important;
+}
+
+/* Feature card borders in light mode */
+html.light-mode .hover\\:border-github-accent\\/50:hover {
+    border-color: rgba(9, 105, 218, 0.5);
+}
+
+/* Badge background for light mode */
+html.light-mode .bg-github-border\\/30 {
+    background-color: rgba(208, 215, 222, 0.3);
+}
+
+/* Code and color highlights */
+html.light-mode .text-red-400 {
+    color: #d1242f;
+}
+
+html.light-mode .text-red-500 {
+    color: #d1242f;
+}
+
+html.light-mode .text-yellow-500 {
+    color: #d39e00;
+}
+
+html.light-mode .text-green-500 {
+    color: #1a7f0e;
+}
+
+html.light-mode .bg-blue-500\\/10 {
+    background-color: rgba(9, 105, 218, 0.1);
+}
+
+html.light-mode .bg-green-500\\/10 {
+    background-color: rgba(26, 127, 14, 0.1);
+}
+
+html.light-mode .bg-purple-500\\/10 {
+    background-color: rgba(111, 66, 193, 0.1);
+}
+
+html.light-mode .bg-yellow-500\\/10 {
+    background-color: rgba(211, 158, 0, 0.1);
+}
+
+html.light-mode .bg-orange-500\\/10 {
+    background-color: rgba(251, 146, 60, 0.1);
+}
+
+html.light-mode .bg-red-500\\/10 {
+    background-color: rgba(209, 36, 47, 0.1);
+}
+
+/* Inline code styling */
+html.light-mode code.text-github-accent {
+    color: var(--accent);
+    background-color: rgba(9, 105, 218, 0.1);
+}
+
+/* Quick start and gradient sections */
+html.light-mode .from-github-accent\\/10 {
+    --tw-gradient-from: rgba(9, 105, 218, 0.1);
+}
+
+html.light-mode .to-purple-500\\/10 {
+    --tw-gradient-to: rgba(111, 66, 193, 0.1);
+}
+
+html.light-mode .via-github-purple\\/10 {
+    --tw-gradient-via: rgba(111, 66, 193, 0.1);
+}
+
+html.light-mode .border-github-accent\\/20 {
+    border-color: rgba(9, 105, 218, 0.2);
+}
+
+/* Navbar specific */
+html.light-mode nav {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    border-color: var(--border) !important;
+    backdrop-filter: blur(12px);
+}
+
+/* Terminal text colors for better contrast */
+html.light-mode .text-github-green {
+    color: #1a7f0e;
+    font-weight: 600;
+}
+
+html.light-mode .syntax-size {
+    color: #1a7f0e;
+}
+
+/* Feature cards light mode - override inline styles */
+html.light-mode .feature-card {
+    background-color: rgba(246, 248, 250, 0.5) !important;
+}
+
+/* Terminal blocks and code blocks light mode */
+html.light-mode [style*="background-color: rgba(22, 27, 34"] {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* Navbar styling for light mode */
+html.light-mode .bg-github-dark\\/80 {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}
+
+html.light-mode .shadow-lg.shadow-github-accent\\/20 {
+    box-shadow: 0 10px 15px -3px rgba(9, 105, 218, 0.1);
+}
+
+/* Support section gradients for light mode */
+html.light-mode .bg-gradient-to-r {
+    background: linear-gradient(to right, rgba(9, 105, 218, 0.05), rgba(111, 66, 193, 0.05));
+}
+
+html.light-mode .from-github-accent\\/10 {
+    --tw-gradient-from: rgba(9, 105, 218, 0.1);
+}
+
+html.light-mode .via-github-purple\\/10 {
+    --tw-gradient-via: rgba(111, 66, 193, 0.1);
+}
+
+html.light-mode .to-github-accent\\/10 {
+    --tw-gradient-to: rgba(9, 105, 218, 0.1);
+}
+
+/* Heading text colors for light mode */
+html.light-mode h1,
+html.light-mode h2,
+html.light-mode h3,
+html.light-mode h4,
+html.light-mode h5,
+html.light-mode h6 {
+    color: var(--text-primary);
+}
+
+html.light-mode .text-white {
+    color: var(--text-primary);
+}
+
+/* Compatibility box styling for light mode */
+html.light-mode [style*="background-color: rgba(22, 27, 34, 0.3)"] {
+    background-color: rgba(9, 105, 218, 0.05) !important;
 }

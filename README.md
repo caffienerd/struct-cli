@@ -139,7 +139,7 @@ struct [DEPTH] [OPTIONS]
 **Examples:**
 ```bash
 struct                          # Current dir, infinite depth
-struct 0                        # Current dir only (1 level)
+struct 1                        # Current dir only (1 level)
 struct 3                        # Current dir, 3 levels deep
 struct 5 -p ~/projects          # Projects folder, 5 levels
 struct 2 --path /etc            # /etc, 2 levels

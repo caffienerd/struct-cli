@@ -2,12 +2,71 @@
 document.addEventListener('DOMContentLoaded', function() {
     lucide.createIcons();
     
+    // Initialize theme
+    initTheme();
+    
     // Initialize scroll animations
     initScrollAnimations();
     
     // Initialize smooth scroll for anchor links
     initSmoothScroll();
 });
+
+// Theme management
+function initTheme() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeSun = document.getElementById('theme-sun');
+    const themeMoon = document.getElementById('theme-moon');
+    
+    // Check for saved theme preference or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme ? savedTheme === 'dark' : systemDark;
+    
+    // Apply saved or system theme
+    if (isDark) {
+        document.documentElement.classList.remove('light-mode');
+        themeSun?.classList.remove('hidden');
+        themeMoon?.classList.add('hidden');
+    } else {
+        document.documentElement.classList.add('light-mode');
+        themeSun?.classList.add('hidden');
+        themeMoon?.classList.remove('hidden');
+    }
+    
+    // Add theme toggle listener
+    themeToggle?.addEventListener('click', toggleTheme);
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+}
+
+function toggleTheme() {
+    const isDark = !document.documentElement.classList.contains('light-mode');
+    const newTheme = isDark ? 'light' : 'dark';
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+}
+
+function applyTheme(theme) {
+    const themeSun = document.getElementById('theme-sun');
+    const themeMoon = document.getElementById('theme-moon');
+    
+    if (theme === 'light') {
+        document.documentElement.classList.add('light-mode');
+        themeSun?.classList.add('hidden');
+        themeMoon?.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.remove('light-mode');
+        themeSun?.classList.remove('hidden');
+        themeMoon?.classList.add('hidden');
+    }
+    lucide.createIcons();
+}
 
 // Copy to clipboard functionality
 function copyCode(text) {
